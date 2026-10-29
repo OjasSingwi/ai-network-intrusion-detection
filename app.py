@@ -28,11 +28,12 @@ st.sidebar.header("2. Model Training")
 @st.cache_data
 def load_data(filepath):
     try:
-        df = pd.read_csv(filepath, nrows=15000)
+        df = pd.read_csv(filepath)                       
         df.columns = df.columns.str.strip()
         df.replace([np.inf, -np.inf], np.nan, inplace=True)
         df.dropna(inplace=True)
-        return df
+        df = df.sample(n=15000, random_state=42)         
+return df
     except FileNotFoundError:
         return None
 
@@ -50,7 +51,7 @@ def train_model(df):
     X = df[features]
     y = df[target]
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
     
     clf = RandomForestClassifier(n_estimators=10, max_depth=10, random_state=42)
     clf.fit(X_train, y_train)
